@@ -1,10 +1,19 @@
 var canvas = document.getElementById("battlefield");
 var ctx = canvas.getContext("2d");
+var ctx2 = canvas.getContext("2d");
 ctx.font = "15px Arial";
-ctx.fillStyle = "red";
+var hpLabel = document.getElementById("hp");
 
 let myDmg = 10;
-
+let myHp = 100;
+hpLabel.style.color = "red";
+hpLabel.textContent = myHp;
+let kills = 0;
+var killsLabel = document.getElementById("kills");
+killsLabel.textContent = kills;
+var timer = document.getElementById("time");
+let timeMin = 0;
+let timeSec = 0;
 const cannonX = 1000;
 const cannonY = 250;
 
@@ -16,22 +25,35 @@ function drawCannon() {
   ctx.stroke();
 }
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 const Enemy = function (hp, speed, dmg) {
   this.hp = hp;
   this.speed = speed;
   this.dmg = dmg;
-  this.x = 0;
-  this.y = hp;
 
-  this.width = 100;
-  this.height = 50;
+  this.x = 0;
+  this.y = getRandomInt(0, 500);
+
+  this.width = 50;
+  this.height = 25;
+
+  this.shotDown = false;
+  this.arrived = false;
 
   this.clear = () => {
     ctx.clearRect(this.x, this.y - 25, this.width, this.height + 25);
   };
+
   this.draw = () => {
     this.x += 1;
-    ctx.fillRect(this.x, this.y, 100, 50);
+    ctx.fillStyle = "grey";
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.fillStyle = "red";
     ctx.fillText(this.hp, this.x, this.y - 10);
   };
 
@@ -39,22 +61,32 @@ const Enemy = function (hp, speed, dmg) {
     this.interval = setInterval(() => {
       this.clear();
       this.draw();
+      if (this.x > 1000) {
+        this.arrived = true;
+        getDamage(this.dmg);
+        this.stop();
+      }
     }, this.speed);
   };
 
   this.hit = (dmg) => {
     this.hp -= dmg;
     if (this.hp === 0) {
-      clearInterval(this.interval);
-      this.clear();
-      this.x = 0;
-      this.y = 0;
-      // enemiesArray.pop(this);
+      this.shotDown = true;
+      this.stop();
+      kills += 1;
+      killsLabel.textContent = kills;
     }
   };
-};
 
-drawCannon();
+  this.stop = () => {
+    clearInterval(this.interval);
+    this.clear();
+    this.x = 0;
+    this.y = 0;
+    this.clear();
+  };
+};
 
 const Bullet = function (destX, destY) {
   this.lastX = cannonX;
@@ -62,8 +94,15 @@ const Bullet = function (destX, destY) {
 
   this.dmg = myDmg;
 
+  this.size = 3;
+
   this.clear = () => {
-    ctx.clearRect(this.lastX - 10, this.lastY - 10, 20, 20);
+    ctx.clearRect(
+      this.lastX - 10,
+      this.lastY - 10,
+      this.size * 5,
+      this.size * 5
+    );
   };
 
   let yDir = cannonY > destY ? -1 : cannonY < destY ? 1 : 0;
@@ -72,12 +111,20 @@ const Bullet = function (destX, destY) {
   lenY = lenY > -0 ? lenY : lenY * -1;
   let diff = lenX > lenY ? lenY / lenX : lenX / lenY;
 
-  this.nextX = this.lastX - 0.8 * 100;
-  this.nextY = this.lastY + 0.8 * 100 * diff * yDir;
+  this.nextX = this.lastX; // - 0.1 * 1000;
+  this.nextY = this.lastY; //+ 0.1 * 1000 * diff * yDir;
 
   this.draw = () => {
     ctx.beginPath();
-    ctx.ellipse(this.nextX, this.nextY, 5, 5, Math.PI / 4, 0, 2 * Math.PI);
+    ctx.ellipse(
+      this.nextX,
+      this.nextY,
+      this.size,
+      this.size,
+      Math.PI / 4,
+      0,
+      2 * Math.PI
+    );
     ctx.stroke();
     this.lastX = this.nextX;
     this.lastY = this.nextY;
@@ -99,9 +146,9 @@ const Bullet = function (destX, destY) {
   this.checkHit = () => {
     enemiesArray.forEach((e) => {
       var left = e.x;
-      var right = e.x + 100;
+      var right = e.x + e.width;
       var top = e.y;
-      var bottom = e.y + 50;
+      var bottom = e.y + e.height;
 
       let hit =
         this.lastX >= left &&
@@ -124,17 +171,34 @@ const Bullet = function (destX, destY) {
 };
 
 function spawnEnemies() {
-  var e1 = new Enemy(200, 10, 10);
-  var e2 = new Enemy(250, 10, 10);
-  // var e3 = new Enemy(300, 60, 10);
-
-  enemiesArray = [e1, e2];
+  var e1 = new Enemy(100, 10, 20);
+  var e2 = new Enemy(50, 10, 15);
+  var e3 = new Enemy(80, 60, 10);
+  var e4 = new Enemy(80, 60, 10);
+  var e5 = new Enemy(80, 60, 40);
+  enemiesArray = [e1, e2, e3, e4, e5];
   enemiesArray.forEach((e) => {
     e.start();
   });
 }
 
-spawnEnemies();
+function getDamage(dmg) {
+  myHp -= dmg;
+  hpLabel.textContent = myHp;
+}
+
+function startTimer() {
+  setInterval(() => {
+    timeSec += 1;
+    if (timeSec === 60) {
+      timeMin += 1;
+      timeSec = 0;
+    }
+    let minutes = timeMin > 10 ? timeMin : `0${timeMin}`;
+    let seconds = timeSec > 10 ? timeSec : `0${timeSec}`;
+    timer.textContent = `${minutes}:${seconds}`;
+  }, 1000);
+}
 
 canvas.addEventListener(
   "click",
@@ -145,6 +209,14 @@ canvas.addEventListener(
   false
 );
 
-// setInterval(() => {
-//   console.log(enemiesArray.length);
-// }, 20);
+canvas.addEventListener(
+  "mousemove",
+  function (e) {
+    drawCannon();
+  },
+  false
+);
+
+startTimer();
+drawCannon();
+spawnEnemies();

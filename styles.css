@@ -16,10 +16,11 @@ body {
 .battlefield {
   border: 1px solid black;
   grid-column: 1/9;
+  background-color: lightgrey;
 }
 
 .base {
-  background-color: blue;
+  background-color: grey;
   grid-column: 10;
   border-top: 1px solid black;
   border-bottom: 1px solid black;
@@ -30,7 +31,10 @@ body {
   margin-top: 1px;
   border: 1px solid black;
   height: 50px;
-  background-color: green;
+  background-color: white;
   grid-column-start: 9;
   grid-column-end: 11;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
