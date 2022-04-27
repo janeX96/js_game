@@ -227,9 +227,7 @@ canvas.addEventListener(
     console.log(ammoIndex);
     if (ammoIndex >= 0) {
       ammoArray[ammoIndex] = 0;
-      setTimeout(() => {
-        ammoArray[ammoArray.indexOf(0)] = 1;
-      }, ammoLoadTime);
+
       var b = new Bullet(e.offsetX, e.offsetY);
       b.go();
     }
@@ -247,8 +245,9 @@ canvas.addEventListener(
 );
 
 setInterval(() => {
+  ammoArray[ammoArray.indexOf(0)] = 1;
   drawAmmo();
-}, 10);
+}, ammoLoadTime);
 
 startTimer();
 drawCannon();
