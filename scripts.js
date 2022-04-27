@@ -1,6 +1,7 @@
 var canvas = document.getElementById("battlefield");
+var canvas2 = document.getElementById("base");
 var ctx = canvas.getContext("2d");
-var ctx2 = canvas.getContext("2d");
+var ctx2 = canvas2.getContext("2d");
 ctx.font = "15px Arial";
 var hpLabel = document.getElementById("hp");
 
@@ -18,6 +19,8 @@ const cannonX = 1000;
 const cannonY = 250;
 
 let enemiesArray = [];
+let ammoArray = [1, 1, 1];
+let ammoLoadTime = 1000;
 
 function drawCannon() {
   ctx.beginPath();
@@ -187,6 +190,23 @@ function getDamage(dmg) {
   hpLabel.textContent = myHp;
 }
 
+function drawAmmo() {
+  let y = 400;
+
+  ammoArray
+    .slice()
+    .reverse()
+    .forEach((element) => {
+      ctx2.fillStyle = "grey";
+      ctx2.fillRect(40, y, 50, 20);
+      if (element === 1) {
+        ctx2.fillStyle = "blue";
+        ctx2.fillRect(40, y, 50, 20);
+      }
+      y += 25;
+    });
+}
+
 function startTimer() {
   setInterval(() => {
     timeSec += 1;
@@ -203,8 +223,17 @@ function startTimer() {
 canvas.addEventListener(
   "click",
   function (e) {
-    var b = new Bullet(e.offsetX, e.offsetY);
-    b.go();
+    let ammoIndex = ammoArray.lastIndexOf(1);
+    console.log(ammoIndex);
+    if (ammoIndex >= 0) {
+      ammoArray[ammoIndex] = 0;
+      setTimeout(() => {
+        ammoArray[ammoArray.indexOf(0)] = 1;
+      }, ammoLoadTime);
+      var b = new Bullet(e.offsetX, e.offsetY);
+      b.go();
+    }
+    drawAmmo();
   },
   false
 );
@@ -217,6 +246,11 @@ canvas.addEventListener(
   false
 );
 
+setInterval(() => {
+  drawAmmo();
+}, 10);
+
 startTimer();
 drawCannon();
 spawnEnemies();
+drawAmmo();
