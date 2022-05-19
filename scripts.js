@@ -128,6 +128,8 @@ const Bullet = function (destX, destY) {
       0,
       2 * Math.PI
     );
+    ctx.fillStyle = "black";
+    ctx.fill();
     ctx.stroke();
     this.lastX = this.nextX;
     this.lastY = this.nextY;
