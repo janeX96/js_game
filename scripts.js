@@ -18,7 +18,7 @@ if (localStorage.getItem("user") != null) {
 }
 
 var myDmg = 10;
-var myHp = 1;
+var myHp = 100;
 hpLabel.style.color = "red";
 hpLabel.textContent = myHp;
 var kills = 0;
@@ -105,7 +105,7 @@ const Enemy = function (hp, speed, dmg) {
     this.clear();
     this.x = 0;
     this.y = 0;
-    this.clear();
+    this.hp = 0;
   };
 };
 
@@ -200,7 +200,8 @@ function getRandomIntInclusive(min, max) {
 }
 
 function startWave() {
-  if (enemiesArray.length == 0) {
+  if (enemiesArray.length == 0 && myHp > 0) {
+    wave = true;
     waveCounter += 1;
     waveNumber.textContent = waveCounter;
     let waveInterval = setInterval(() => {
@@ -231,6 +232,16 @@ function startWave() {
     }, 20000);
   } else {
     setTimeout(() => {
+      let exist = false;
+      enemiesArray.forEach((e) => {
+        if (e.hp != 0) {
+          exist = true;
+        }
+      });
+
+      if (!exist) {
+        enemiesArray = [];
+      }
       startWave();
     }, 1000);
   }
@@ -350,7 +361,12 @@ function saveScore(isNew = true) {
     localStorage.setItem("user", userName);
   }
 
-  if (isNew || localStorage.getItem("score-waves") < waveCounter) {
+  if (
+    isNew ||
+    localStorage.getItem("score-waves") < waveCounter ||
+    (localStorage.getItem("score-waves") == waveCounter &&
+      localStorage.getItem("score-kills") < kills)
+  ) {
     localStorage.setItem("score-kills", kills);
     localStorage.setItem("score-time-min", timeMin);
     localStorage.setItem("score-time-sec", timeSec);
