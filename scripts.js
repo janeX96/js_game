@@ -4,9 +4,21 @@ var ctx = canvas.getContext("2d");
 var ctx2 = canvas2.getContext("2d");
 ctx.font = "15px Arial";
 var hpLabel = document.getElementById("hp");
+var lastScore = document.getElementById("lastScore");
+
+//show the best score if there is info in local storage
+if (localStorage.getItem("user") != null) {
+  lastScore.textContent = `${localStorage.getItem(
+    "user"
+  )} : ${localStorage.getItem("score-kills")} kills in ${localStorage.getItem(
+    "score-time-min"
+  )} min ${localStorage.getItem("score-time-sec")}sec - ${localStorage.getItem(
+    "score-waves"
+  )} waves`;
+}
 
 var myDmg = 10;
-var myHp = 100;
+var myHp = 1;
 hpLabel.style.color = "red";
 hpLabel.textContent = myHp;
 var kills = 0;
@@ -319,12 +331,32 @@ function death() {
     300,
     200
   );
+
+  if (localStorage.getItem("user") == null) {
+    document.getElementById("summary").style.display = "grid";
+  } else {
+    saveScore(false);
+  }
 }
 
 setInterval(() => {
   ammoArray[ammoArray.indexOf(0)] = 1;
   drawAmmo();
 }, ammoLoadTime);
+
+function saveScore(isNew = true) {
+  if (isNew) {
+    let userName = document.getElementById("nickname").value;
+    localStorage.setItem("user", userName);
+  }
+
+  if (isNew || localStorage.getItem("score-waves") < waveCounter) {
+    localStorage.setItem("score-kills", kills);
+    localStorage.setItem("score-time-min", timeMin);
+    localStorage.setItem("score-time-sec", timeSec);
+    localStorage.setItem("score-waves", waveCounter);
+  }
+}
 
 startTimer();
 drawCannon();
