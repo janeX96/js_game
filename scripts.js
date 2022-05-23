@@ -5,22 +5,26 @@ var ctx2 = canvas2.getContext("2d");
 ctx.font = "15px Arial";
 var hpLabel = document.getElementById("hp");
 
-let myDmg = 10;
-let myHp = 100;
+var myDmg = 10;
+var myHp = 100;
 hpLabel.style.color = "red";
 hpLabel.textContent = myHp;
-let kills = 0;
+var kills = 0;
 var killsLabel = document.getElementById("kills");
 killsLabel.textContent = kills;
 var timer = document.getElementById("time");
-let timeMin = 0;
-let timeSec = 0;
+var timeMin = 0;
+var timeSec = 0;
 const cannonX = 1000;
 const cannonY = 250;
 
-let enemiesArray = [];
-let ammoArray = [1, 1, 1];
-let ammoLoadTime = 1000;
+var enemiesArray = [];
+var ammoArray = [1, 1, 1];
+var ammoLoadTime = 1000;
+
+var waveCounter = 1;
+var waveNumber = document.getElementById("waveNumber");
+waveNumber.textContent = waveCounter;
 
 function drawCannon() {
   ctx.beginPath();
@@ -74,7 +78,7 @@ const Enemy = function (hp, speed, dmg) {
 
   this.hit = (dmg) => {
     this.hp -= dmg;
-    if (this.hp === 0) {
+    if (this.hp <= 0) {
       this.shotDown = true;
       this.stop();
       kills += 1;
@@ -175,6 +179,47 @@ const Bullet = function (destX, destY) {
   };
 };
 
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function startWave() {
+  let wave = true;
+  let waveInterval = setInterval(() => {
+    let timeout = getRandomIntInclusive(2, 5);
+    setTimeout(() => {
+      if (wave) {
+        let hp = getRandomIntInclusive(1, 10) * 5;
+        let dmg = getRandomIntInclusive(4, 10);
+        let speed = getRandomIntInclusive(1, 10) * 5;
+
+        var enemy = new Enemy(hp, speed, dmg);
+        console.log("new enemy spawned");
+        enemiesArray.push(enemy);
+        enemy.start();
+      }
+    }, 1000 * timeout);
+  }, 1000);
+
+  setTimeout(() => {
+    wave = false;
+    clearInterval(waveInterval);
+    waveCounter += 1;
+    waveNumber.textContent = waveCounter;
+
+    if (myHp > 0) {
+      setTimeout(() => {
+        startWave();
+      }, 5000);
+    }
+  }, 20000);
+}
+
+function start() {
+  startWave();
+}
 function spawnEnemies() {
   var e1 = new Enemy(100, 10, 20);
   var e2 = new Enemy(50, 10, 15);
@@ -253,5 +298,6 @@ setInterval(() => {
 
 startTimer();
 drawCannon();
-spawnEnemies();
+// spawnEnemies();
+start();
 drawAmmo();
