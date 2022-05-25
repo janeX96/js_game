@@ -4,20 +4,23 @@ var ctx = canvas.getContext("2d");
 var ctx2 = canvas2.getContext("2d");
 ctx.font = "15px Arial";
 var hpLabel = document.getElementById("hp");
-var lastScore = document.getElementById("lastScore");
+var bestScore = document.getElementById("bestScore");
 
 //show the best score if there is info in local storage
-if (localStorage.getItem("user") != null) {
-  lastScore.textContent = `${localStorage.getItem(
-    "user"
-  )} : ${localStorage.getItem("score-kills")} kills in ${localStorage.getItem(
+if (localStorage.getItem("score-kills") != null) {
+  bestScore.textContent = ` ${localStorage.getItem(
+    "score-kills"
+  )} kills in ${localStorage.getItem(
     "score-time-min"
   )} min ${localStorage.getItem("score-time-sec")}sec - ${localStorage.getItem(
     "score-waves"
   )} waves`;
 }
 
+var weaponName = "simple gun";
 var myDmg = 10;
+
+//score board variables
 var myHp = 100;
 hpLabel.style.color = "red";
 hpLabel.textContent = myHp;
@@ -28,6 +31,8 @@ var timer = document.getElementById("time");
 var timeMin = 0;
 var timeSec = 0;
 var timerInterval = null;
+
+//cannon coords
 const cannonX = 1000;
 const cannonY = 250;
 
@@ -201,6 +206,15 @@ function getRandomIntInclusive(min, max) {
 
 function startWave() {
   if (enemiesArray.length == 0 && myHp > 0) {
+    // ctx.font = "32px Arial";
+    // ctx.fillStyle = "red";
+    // ctx.fillText(`Wave ${waveCounter}`, 350, 250);
+    document.getElementById("info").style.display = "grid";
+    document.getElementById("info").textContent = `Wave ${waveCounter + 1}`;
+    setTimeout(() => {
+      document.getElementById("info").style.display = "none";
+    }, 5000);
+
     wave = true;
     waveCounter += 1;
     waveNumber.textContent = waveCounter;
@@ -265,17 +279,17 @@ function startWave() {
 function start() {
   startWave();
 }
-function spawnEnemies() {
-  var e1 = new Enemy(100, 10, 20);
-  var e2 = new Enemy(50, 10, 15);
-  var e3 = new Enemy(80, 60, 10);
-  var e4 = new Enemy(80, 60, 10);
-  var e5 = new Enemy(80, 60, 40);
-  enemiesArray = [e1, e2, e3, e4, e5];
-  enemiesArray.forEach((e) => {
-    e.start();
-  });
-}
+// function spawnEnemies() {
+//   var e1 = new Enemy(100, 10, 20);
+//   var e2 = new Enemy(50, 10, 15);
+//   var e3 = new Enemy(80, 60, 10);
+//   var e4 = new Enemy(80, 60, 10);
+//   var e5 = new Enemy(80, 60, 40);
+//   enemiesArray = [e1, e2, e3, e4, e5];
+//   enemiesArray.forEach((e) => {
+//     e.start();
+//   });
+// }
 
 function getDamage(dmg) {
   myHp -= dmg;
@@ -358,11 +372,11 @@ function death() {
     200
   );
 
-  if (localStorage.getItem("user") == null) {
-    document.getElementById("summary").style.display = "grid";
-  } else {
-    saveScore(false);
-  }
+  // if (localStorage.getItem("user") == null) {
+  //   document.getElementById("summary").style.display = "grid";
+  // } else {
+  saveScore(false);
+  // }
 }
 
 setInterval(() => {
@@ -371,10 +385,10 @@ setInterval(() => {
 }, ammoLoadTime);
 
 function saveScore(isNew = true) {
-  if (isNew) {
-    let userName = document.getElementById("nickname").value;
-    localStorage.setItem("user", userName);
-  }
+  // if (isNew) {
+  //   let userName = document.getElementById("nickname").value;
+  //   localStorage.setItem("user", userName);
+  // }
 
   if (
     isNew ||
@@ -389,8 +403,17 @@ function saveScore(isNew = true) {
   }
 }
 
+function drawWeaponParams() {
+  ctx2.font = "16px Arial";
+  ctx2.fillStyle = "blue";
+  ctx2.fillText(weaponName, 20, 20);
+  ctx2.fillStyle = "red";
+  ctx2.fillText(`dmg: ${myDmg}`, 20, 40);
+}
+
 startTimer();
 drawCannon();
 // spawnEnemies();
 start();
 drawAmmo();
+drawWeaponParams();
