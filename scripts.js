@@ -206,9 +206,7 @@ function getRandomIntInclusive(min, max) {
 
 function startWave() {
   if (enemiesArray.length == 0 && myHp > 0) {
-    // ctx.font = "32px Arial";
-    // ctx.fillStyle = "red";
-    // ctx.fillText(`Wave ${waveCounter}`, 350, 250);
+    //show info about new wave for 5s
     document.getElementById("info").style.display = "grid";
     document.getElementById("info").textContent = `Wave ${waveCounter + 1}`;
     setTimeout(() => {
@@ -297,6 +295,7 @@ function getDamage(dmg) {
 
   if (myHp <= 0) {
     myHp = 0;
+    hpLabel.textContent = 0;
     death();
   }
 }
@@ -362,13 +361,13 @@ function death() {
     e.stop();
   });
   ctx.fillStyle = "green";
-  ctx.fillRect(200, 100, 600, 300);
+  ctx.fillRect(150, 100, 700, 300);
 
   ctx.fillStyle = "red";
   ctx.font = "35px Arial";
   ctx.fillText(
     `SCORE: ${kills}kills in ${timeMin}min ${timeSec}sec (${waveCounter} waves)`,
-    300,
+    200,
     200
   );
 
@@ -377,6 +376,7 @@ function death() {
   // } else {
   saveScore(false);
   // }
+  document.getElementById("reloadButton").style.display = "grid";
 }
 
 setInterval(() => {
@@ -409,6 +409,10 @@ function drawWeaponParams() {
   ctx2.fillText(weaponName, 20, 20);
   ctx2.fillStyle = "red";
   ctx2.fillText(`dmg: ${myDmg}`, 20, 40);
+}
+
+function reloadGame() {
+  window.location.reload();
 }
 
 startTimer();
