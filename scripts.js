@@ -205,12 +205,27 @@ function startWave() {
     waveCounter += 1;
     waveNumber.textContent = waveCounter;
     let waveInterval = setInterval(() => {
-      let timeout = getRandomIntInclusive(2, 5);
+      let timeout;
+      if (enemiesArray.length == 0) {
+        timeout = 1;
+      } else {
+        timeout = getRandomIntInclusive(2, 5);
+      }
+
       setTimeout(() => {
         if (wave) {
-          let hp = getRandomIntInclusive(1, 10) * 5;
-          let dmg = getRandomIntInclusive(4, 100);
-          let speed = getRandomIntInclusive(1, 10) * 5;
+          //get random hp
+          let hp = getRandomIntInclusive(1, 25 * waveCounter);
+          let dmg;
+          let speed;
+
+          if (hp >= 25) {
+            dmg = getRandomIntInclusive(4, 20) * waveCounter;
+            speed = getRandomIntInclusive(20, 50);
+          } else {
+            dmg = getRandomIntInclusive(4, 10) * waveCounter;
+            speed = getRandomIntInclusive(4, 15);
+          }
 
           var enemy = new Enemy(hp, speed, dmg);
           console.log("new enemy spawned");
