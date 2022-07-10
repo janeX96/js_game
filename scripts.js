@@ -13,6 +13,17 @@ const battleground = new Image();
 battleground.src = "./images/battleground.png";
 const bulletImg = new Image();
 bulletImg.src = "./images/bullet.png";
+
+const explosionImgs = [];
+
+function loadExplosionImages() {
+  for (let index = 0; index < 7; index++) {
+    explosionImg = new Image();
+    explosionImg.src = `./images/explosion/Explosion_${index + 1}.png`;
+    explosionImgs.push(explosionImg);
+  }
+}
+
 //show the best score if there is info in local storage
 if (localStorage.getItem("score-kills") != null) {
   bestScore.textContent = ` ${localStorage.getItem(
@@ -108,6 +119,13 @@ const Enemy = function (hp, speed, dmg) {
     this.hp -= dmg;
     if (this.hp <= 0) {
       this.shotDown = true;
+      animateExplosion(
+        ctx,
+        this.x - 20,
+        this.y - 20,
+        this.width + 50,
+        this.height + 50
+      );
       this.stop();
       kills += 1;
       killsLabel.textContent = kills;
@@ -299,6 +317,7 @@ function start() {
 // }
 
 function getDamage(dmg) {
+  animateExplosion(ctx2, 30, getRandomInt(10, 490), 100, 100);
   myHp -= dmg;
   hpLabel.textContent = myHp;
 
@@ -428,9 +447,28 @@ function reloadGame() {
   window.location.reload();
 }
 
+function animateExplosion(ctx, x, y, w, h) {
+  let n = 0;
+
+  let animationInterval = setInterval(() => {
+    if (n < 7) {
+      ctx.clearRect(x, y, w, h);
+      ctx.drawImage(explosionImgs[n], x, y, w, h);
+      n++;
+      w += 3;
+      h += 3;
+    } else {
+      ctx.clearRect(x, y, w, h);
+      clearInterval(animationInterval);
+    }
+  }, 100);
+}
+
+loadExplosionImages();
 startTimer();
 drawCannon();
 // spawnEnemies();
 start();
 drawAmmo();
 drawWeaponParams();
+console.log(explosionImgs);
