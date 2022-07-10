@@ -6,6 +6,13 @@ ctx.font = "15px Arial";
 var hpLabel = document.getElementById("hp");
 var bestScore = document.getElementById("bestScore");
 
+//images
+const tankImg = new Image();
+tankImg.src = "./images/tank.png";
+const battleground = new Image();
+battleground.src = "./images/battleground.png";
+const bulletImg = new Image();
+bulletImg.src = "./images/bullet.png";
 //show the best score if there is info in local storage
 if (localStorage.getItem("score-kills") != null) {
   bestScore.textContent = ` ${localStorage.getItem(
@@ -62,11 +69,11 @@ const Enemy = function (hp, speed, dmg) {
   this.speed = speed;
   this.dmg = dmg;
 
-  this.x = 0;
+  this.x = -10;
   this.y = getRandomInt(0, 500);
 
   this.width = 50;
-  this.height = 25;
+  this.height = 40;
 
   this.shotDown = false;
   this.arrived = false;
@@ -77,8 +84,10 @@ const Enemy = function (hp, speed, dmg) {
 
   this.draw = () => {
     this.x += 1;
-    ctx.fillStyle = "grey";
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    // ctx.fillStyle = "grey";
+    // ctx.fillRect(this.x, this.y, this.width, this.height);
+
+    ctx.drawImage(tankImg, this.x, this.y, this.width, this.height);
     ctx.fillStyle = "red";
     ctx.fillText(this.hp, this.x, this.y - 10);
   };
@@ -225,7 +234,7 @@ function startWave() {
       }
 
       setTimeout(() => {
-        if (wave) {
+        if (wave && enemiesArray.length < 10) {
           //get random hp
           let hp = getRandomIntInclusive(1, 25 * waveCounter);
           let dmg;
@@ -307,11 +316,15 @@ function drawAmmo() {
     .slice()
     .reverse()
     .forEach((element) => {
-      ctx2.fillStyle = "grey";
-      ctx2.fillRect(40, y, 50, 20);
+      // ctx2.fillStyle = "grey";
+      // ctx2.fillRect(40, y, 50, 20);
+      // ctx2.clearRect(20, y, 100, 70);
       if (element === 1) {
-        ctx2.fillStyle = "blue";
-        ctx2.fillRect(40, y, 50, 20);
+        // ctx2.fillStyle = "blue";
+        // ctx2.fillRect(40, y, 50, 20);
+        ctx2.drawImage(bulletImg, 20, y, 100, 70);
+      } else {
+        ctx2.clearRect(20, y, 100, 70);
       }
       y += 25;
     });

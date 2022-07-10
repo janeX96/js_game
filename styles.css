@@ -16,15 +16,16 @@ body {
 .battlefield {
   border: 1px solid black;
   grid-column: 1/9;
-  background-color: lightgrey;
+  background-image: url("./images/battleground.png");
+  background-size: 600px 500px;
 }
 
 .base {
-  background-color: grey;
   grid-column: 10;
   border-top: 1px solid black;
   border-bottom: 1px solid black;
   border-right: 1px solid black;
+  background-image: url("./images/base.png");
 }
 
 .score-board {
