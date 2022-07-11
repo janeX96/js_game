@@ -8,17 +8,17 @@ var bestScore = document.getElementById("bestScore");
 
 //images
 const tankImg = new Image();
-tankImg.src = "./images/tank.png";
+tankImg.src = "./tank.png";
 const battleground = new Image();
 battleground.src = "./images/battleground.png";
 const bulletImg = new Image();
-bulletImg.src = "./images/bullet.png";
+bulletImg.src = "./bullet.png";
 
 const explosionImgs = [];
 
 function loadExplosionImages() {
   for (let index = 0; index < 7; index++) {
-    explosionImg = new Image();
+    let explosionImg = new Image();
     explosionImg.src = `./images/explosion/Explosion_${index + 1}.png`;
     explosionImgs.push(explosionImg);
   }
@@ -99,8 +99,9 @@ const Enemy = function (hp, speed, dmg) {
     // ctx.fillRect(this.x, this.y, this.width, this.height);
 
     ctx.drawImage(tankImg, this.x, this.y, this.width, this.height);
-    ctx.fillStyle = "red";
-    ctx.fillText(this.hp, this.x, this.y - 10);
+    ctx.fillStyle = "#b31212";
+    // ctx.fillText(this.hp, this.x, this.y - 10);
+    ctx.fillRect(this.x, this.y - 10, this.hp, 5);
   };
 
   this.start = () => {
